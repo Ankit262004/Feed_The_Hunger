@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">feed_The_hunger</string>
+    <string-array name="usertype">
+        <item>donor</item>
+        <item>receiver</item>
+        <item>volunteer</item>
+    </string-array>
+    <string-array name="foodType">
+        <item>donor</item>
+        <item>receiver</item>
+        <item>volunteer</item>
+    </string-array>
+</resources>
