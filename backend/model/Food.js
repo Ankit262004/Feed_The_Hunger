@@ -18,12 +18,13 @@ const foodSchema = new mongoose.Schema({
     foodType: {
         type: String,
         required: true,
-        enum: ['vegetarian', 'non-vegetarian', 'both']
+        enum: ['veg', 'nonveg', 'both']
     },
     description: {
         type: String,
         maxlength: 300,
-        trim: true
+        trim: true,
+        default: ""
     },
     image: {
         type: String,
@@ -32,29 +33,48 @@ const foodSchema = new mongoose.Schema({
     donorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-        validate: {
-            validator: async function (value) {
-                const user = await mongoose.model('User').findById(value);
-                return user && user.userType === 'donor';
-            },
-            message: 'Invalid donorId: must reference a user with userType "donor".'
-        }
+        required: true
     },
+
+    // 📍 LOCATION (TEXT)
     location: {
         type: String,
         required: true,
         trim: true
     },
+
+    // 📍 NEW: GPS COORDINATES
+    latitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
+        required: true
+    },
+
     status: {
         type: String,
-        enum: ['available', 'claimed', 'expired'],
-        default: 'available'
+        enum: ['pending', 'accepted', 'rejected', 'expired'],
+        default: 'pending'
     },
+
+    handledBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+
+    handledAt: {
+        type: Date,
+        default: null
+    },
+
     postedAt: {
         type: Date,
         default: Date.now
     }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Food', foodSchema);

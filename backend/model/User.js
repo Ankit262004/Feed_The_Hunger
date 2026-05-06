@@ -26,7 +26,28 @@ const userSchema = new mongoose.Schema({
         required: true,
         type: String,
         enum: ['donor', 'receiver', 'admin', 'volunteer']
+    },
+
+    // 🔔 FCM Token
+    fcmToken: {
+        type: String,
+        default: null
+    },
+
+    // 🔐 OTP RESET FIELDS (ADD THESE)
+    resetOtp: {
+        type: String,
+        default: null
+    },
+    resetOtpExpiry: {
+        type: Date,
+        default: null
+    },
+    otpVerified: {
+        type: Boolean,
+        default: false
     }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

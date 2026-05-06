@@ -1,49 +1,75 @@
-// index.js
 require('dotenv').config();
+
+// ✅ KEEP MAIL LOGS
+console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MAIL_PASS:", process.env.MAIL_PASS ? "Loaded" : "Missing");
 
 const express = require('express');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const path = require('path');
+const cors = require('cors');
+
 const app = express();
-app.use(express.urlencoded({ extended: true }));
-// Ensure uploads folder exists
-const uploadsDir = './uploads';
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-}
 
-// MongoDB Connection
-const mongoString = process.env.DATABASE_URL;
-mongoose.connect(mongoString, { useNewUrlParser: true, useUnifiedTopology: true });
-
-const database = mongoose.connection;
-database.on('error', (error) => {
-    console.error(" MongoDB Connection Error:", error);
-});
-database.once('connected', () => {
-    console.log(' Database Connected');
-});
-
-// Middleware
+// ===================== MIDDLEWARE =====================
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads')); // serve uploaded files
 
-// Routes
+// ===================== CREATE UPLOADS FOLDER =====================
+const uploadsDir = path.join(__dirname, 'uploads');
+
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log("📁 Uploads folder created");
+}
+
+// ===================== SERVE STATIC FILES =====================
+app.use('/uploads', express.static(uploadsDir));
+
+// ===================== MONGODB CONNECTION =====================
+const mongoString = process.env.DATABASE_URL;
+
+if (!mongoString) {
+    console.error("❌ DATABASE_URL is missing in .env file");
+    process.exit(1);
+}
+
+mongoose.connect(mongoString)
+    .then(() => {
+        console.log("✅ MongoDB Connected Successfully");
+    })
+    .catch((error) => {
+        console.error("❌ MongoDB Connection Error:", error);
+        process.exit(1);
+    });
+
+// ===================== ROUTES =====================
 app.get('/', (req, res) => {
-    res.send(" Welcome to the Food Donation Home Page!");
+    res.send("🚀 Food Donation API Running Successfully");
 });
 
-//Import controllers (correct paths)
+// Controllers
 const userController = require('./controller/User_Controller');
 const foodController = require('./controller/food_controller');
 
-//  Use routes
+// Route Mounting
 app.use('/user', userController);
 app.use('/food', foodController);
 
-// Start Server
+// ===================== 404 HANDLER =====================
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found"
+    });
+});
+
+// ===================== START SERVER =====================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(` Server started at: http://localhost:${PORT}`);
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+    console.log(`🚀 Server running at: http://${HOST}:${PORT}`);
 });
