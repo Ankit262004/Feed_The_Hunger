@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *.iml
 .gradle
 /local.properties
@@ -14,10 +13,3 @@
 .externalNativeBuild
 .cxx
 local.properties
-=======
-node_modules/ 
-backend/serviceAccountKey.json 
-serviceAccountKey.json 
-backend/serviceAccountKey.json 
-serviceAccountKey.json 
->>>>>>> 78b6aed10e5cc50383b205e6a0176de9d4cecd37
