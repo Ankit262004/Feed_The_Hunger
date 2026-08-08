@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainVerifyOtp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Background -->
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/backgroung"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="14dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="26dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verify OTP"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:layout_marginBottom="18dp"/>
+
+            <!-- Subtitle -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter the 6-digit OTP sent to your email"
+                android:textSize="14sp"
+                android:textColor="#777777"
+                android:layout_marginBottom="22dp"
+                android:gravity="center"/>
+
+            <!-- OTP Input -->
+            <EditText
+                android:id="@+id/otpEditText"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Enter OTP"
+                android:inputType="number"
+                android:maxLength="6"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="18sp"
+                android:letterSpacing="0.2"
+                android:gravity="center"
+                android:background="@drawable/rounded_input"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Verify Button (GREEN) -->
+            <Button
+                android:id="@+id/verifyOtpButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Verify OTP"
+                android:textAllCaps="false"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#4CAF50"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

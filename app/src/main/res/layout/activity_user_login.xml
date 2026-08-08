@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/backgroung"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Login Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/loginCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="18dp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="#EFFFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="26dp"
+            android:gravity="center_horizontal">
+
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/logoImageView"
+                android:layout_width="105dp"
+                android:layout_height="105dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="App Logo"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo" />
+
+            <!-- App Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feed The Hunger"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="#1B1B1B"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Subtitle -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login to continue your mission"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="22dp" />
+
+            <!-- Email -->
+            <EditText
+                android:id="@+id/em"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:drawableStart="@android:drawable/ic_dialog_email"
+                android:drawablePadding="10dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="#222222"
+                android:textColorHint="#888888"
+                android:textSize="15sp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/rounded_input" />
+
+            <!-- Password Field with Eye Toggle -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:hint="Password"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:inputType="textPassword"
+                    android:textColor="#222222"
+                    android:textColorHint="#888888"
+                    android:textSize="15sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Forgot Password -->
+            <TextView
+                android:id="@+id/forgetpass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Forgot Password?"
+                android:textColor="#FF7043"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_gravity="end"
+                android:layout_marginBottom="18dp" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:text="Login"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF7043"
+                android:elevation="6dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Register -->
+            <TextView
+                android:id="@+id/registerRedirect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don’t have an account? Register"
+                android:textColor="#FF7043"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+
+            <!-- Back to Home -->
+            <TextView
+                android:id="@+id/backToHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back to Home"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
