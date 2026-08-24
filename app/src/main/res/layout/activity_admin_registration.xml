@@ -93,7 +93,7 @@
                     android:layout_marginBottom="12dp"
                     android:background="@drawable/rounded_input" />
 
-                <!-- Password with Eye Icon -->
+                <!-- Password -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Confirm Password with Eye Icon -->
+                <!-- Confirm Password -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,17 +125,57 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Location -->
+                <!-- Manual Location -->
                 <EditText
                     android:id="@+id/adminLocation"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:hint="Location"
+                    android:hint="Enter Location Manually"
                     android:inputType="textPostalAddress"
                     android:drawableStart="@android:drawable/ic_menu_mylocation"
                     android:padding="12dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/rounded_input" />
+                    android:background="@drawable/rounded_input"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Location Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCurrentLocation"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:text="Current Location"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#4CAF50"
+                        app:cornerRadius="12dp"
+                        android:layout_marginEnd="6dp"
+                        app:icon="@android:drawable/ic_menu_mylocation"
+                        app:iconTint="#FFFFFF" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSelectMap"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:text="Select on Map"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#FF9800"
+                        app:cornerRadius="12dp"
+                        android:layout_marginStart="6dp"
+                        app:icon="@android:drawable/ic_dialog_map"
+                        app:iconTint="#FFFFFF" />
+
+                </LinearLayout>
 
                 <!-- Create Admin Button -->
                 <com.google.android.material.button.MaterialButton

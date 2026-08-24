@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ========================================= -->
+    <!-- MAPLIBRE + MAPTILER STREET MAP -->
+    <!-- ========================================= -->
+
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- ========================================= -->
+    <!-- CENTER LOCATION MARKER -->
+    <!-- ========================================= -->
+
+    <ImageView
+        android:id="@+id/centerMarker"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_mylocation"
+        android:contentDescription="Selected location"
+        android:elevation="8dp" />
+
+    <!-- ========================================= -->
+    <!-- TOP TITLE -->
+    <!-- ========================================= -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="24dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="Select Location"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="#8B0000"
+        android:elevation="8dp" />
+
+    <!-- ========================================= -->
+    <!-- BOTTOM PANEL -->
+    <!-- ========================================= -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="12dp"
+        android:orientation="vertical"
+        android:padding="18dp"
+        android:background="#FFFFFF"
+        android:elevation="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selected Location"
+            android:textColor="#8B0000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/txtSelectedLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Move the map to select a location"
+            android:textColor="#444444"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/btnConfirmLocation"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:text="Confirm Location"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#8B0000" />
+
+    </LinearLayout>
+
+</FrameLayout>

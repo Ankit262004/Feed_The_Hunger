@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ================= PERMISSIONS ================= -->
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- ================= MAP APP VISIBILITY ================= -->
+
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -29,130 +31,176 @@
         android:theme="@style/Theme.Feed_The_hunger"
         android:usesCleartextTraffic="true">
 
+        <!-- ================= MAP PICKER ================= -->
+
+        <activity
+            android:name=".MapPickerActivity"
+            android:exported="false" />
+
         <!-- ================= VOLUNTEER ================= -->
+
         <activity
             android:name=".Volenteer.volunteer_deliveries_main"
             android:exported="false" />
+
         <activity
             android:name=".Volenteer.volenteer_profile"
             android:exported="false" />
+
         <activity
             android:name=".Volenteer.volenteer_reset_password"
             android:exported="false" />
+
         <activity
             android:name=".Volenteer.volenteer_verify_otp"
             android:exported="false" />
+
         <activity
             android:name=".Volenteer.volenteer_Forgetpassword"
             android:exported="false" />
+
         <activity
             android:name=".Volenteer.Volenteer_Login"
             android:exported="true" />
+
         <activity
             android:name=".Volenteer.Volenteer_Registration"
             android:exported="true" />
+
         <activity
             android:name=".Volenteer.activity_volenteer_dashboard"
             android:exported="true" />
+
         <activity
             android:name=".Volenteer.activity_food"
             android:exported="true" />
 
         <!-- ================= USER ================= -->
+
         <activity
             android:name=".User.User_forgotpassword"
             android:exported="false" />
+
         <activity
             android:name=".User.user_verify_otp"
             android:exported="false" />
+
         <activity
             android:name=".User.user_reset_password"
             android:exported="false" />
+
         <activity
             android:name=".User.user_profile"
             android:exported="false" />
+
         <activity
             android:name=".User.activity_user_dashboard"
             android:exported="true" />
+
         <activity
             android:name=".User.User_Login"
             android:exported="true" />
+
         <activity
             android:name=".User.User_Registration"
             android:exported="true" />
 
         <!-- ================= ADMIN ================= -->
+
         <activity
             android:name=".admin_forgetpassword"
             android:exported="false" />
+
         <activity
             android:name=".admin_verify_otp"
             android:exported="false" />
+
         <activity
             android:name=".admin_reset_password"
             android:exported="false" />
+
         <activity
             android:name=".admin_registration"
             android:exported="false" />
+
         <activity
             android:name=".admin_login"
             android:exported="false" />
+
         <activity
             android:name=".admin_dashboard"
             android:exported="false" />
+
         <activity
             android:name=".admin_vol_main"
             android:exported="false" />
+
         <activity
             android:name=".admin_vol_row"
             android:exported="false" />
+
         <activity
             android:name=".admin_user_main"
             android:exported="false" />
+
         <activity
             android:name=".admin_user_row"
             android:exported="false" />
+
         <activity
             android:name=".admin_food_main"
             android:exported="false" />
+
         <activity
             android:name=".admin_food_row"
             android:exported="false" />
 
         <!-- ================= COMMON ================= -->
+
         <activity
             android:name=".vol_req"
             android:exported="false" />
+
         <activity
             android:name=".vol_req_row"
             android:exported="false" />
+
         <activity
             android:name=".food_main_"
             android:exported="true" />
+
         <activity
             android:name=".activity_choose"
             android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />
 
         <!-- ================= SPLASH / LAUNCHER ================= -->
+
         <activity
             android:name=".activity_splash"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <!-- ================= FIREBASE ================= -->
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
+
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+
         </service>
 
     </application>
