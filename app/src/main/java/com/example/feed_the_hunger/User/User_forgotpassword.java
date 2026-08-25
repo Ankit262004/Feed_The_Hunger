@@ -15,6 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -32,12 +33,15 @@ public class User_forgotpassword extends AppCompatActivity {
     private TextView backToLoginText;
     private RequestQueue requestQueue;
 
-    private static final String TAG = "user_forgetpassword";
-    private final String SEND_OTP_URL = MyIP.IP_ADDRESS + "user/forgot-password/send-otp";
+    private static final String TAG = "UserForgotPassword";
+
+    private final String SEND_OTP_URL =
+            MyIP.IP_ADDRESS + "user/forgot-password/send-otp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_forgotpassword);
 
@@ -47,11 +51,25 @@ public class User_forgotpassword extends AppCompatActivity {
 
         requestQueue = Volley.newRequestQueue(this);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainForget), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(R.id.mainForget),
+                (v, insets) -> {
+
+                    Insets systemBars =
+                            insets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                            );
+
+                    v.setPadding(
+                            systemBars.left,
+                            systemBars.top,
+                            systemBars.right,
+                            systemBars.bottom
+                    );
+
+                    return insets;
+                }
+        );
 
         sendOtpButton.setOnClickListener(v -> sendOtp());
 
@@ -59,72 +77,262 @@ public class User_forgotpassword extends AppCompatActivity {
     }
 
     private void sendOtp() {
-        String email = emailEditText.getText().toString().trim().toLowerCase();
+
+        String email =
+                emailEditText.getText()
+                        .toString()
+                        .trim()
+                        .toLowerCase();
+
+        // -----------------------------------------
+        // VALIDATE EMAIL
+        // -----------------------------------------
 
         if (TextUtils.isEmpty(email)) {
+
             emailEditText.setError("Enter email");
             emailEditText.requestFocus();
+
             return;
         }
 
         try {
+
+            // -----------------------------------------
+            // BUTTON STATE
+            // -----------------------------------------
+
             sendOtpButton.setEnabled(false);
             sendOtpButton.setText("Sending...");
 
+            // -----------------------------------------
+            // REQUEST BODY
+            // -----------------------------------------
+
             JSONObject jsonObject = new JSONObject();
+
             jsonObject.put("email", email);
 
-            Log.d(TAG, "SEND OTP URL: " + SEND_OTP_URL);
-            Log.d(TAG, "REQUEST BODY: " + jsonObject.toString());
+            Log.d(TAG, "=================================");
+            Log.d(TAG, "SEND OTP REQUEST");
+            Log.d(TAG, "URL: " + SEND_OTP_URL);
+            Log.d(TAG, "EMAIL: " + email);
+            Log.d(TAG, "BODY: " + jsonObject);
+            Log.d(TAG, "=================================");
 
-            JsonObjectRequest request = new JsonObjectRequest(
-                    Request.Method.POST,
-                    SEND_OTP_URL,
-                    jsonObject,
-                    response -> {
-                        sendOtpButton.setEnabled(true);
-                        sendOtpButton.setText("Send OTP");
+            // -----------------------------------------
+            // VOLLEY REQUEST
+            // -----------------------------------------
 
-                        String message = response.optString("message", "OTP sent successfully");
-                        Toast.makeText(User_forgotpassword.this, message, Toast.LENGTH_LONG).show();
+            JsonObjectRequest request =
+                    new JsonObjectRequest(
+                            Request.Method.POST,
+                            SEND_OTP_URL,
+                            jsonObject,
 
-                        Intent intent = new Intent(User_forgotpassword.this, user_verify_otp.class);
-                        intent.putExtra("email", email);
-                        startActivity(intent);
-                    },
-                    error -> {
-                        sendOtpButton.setEnabled(true);
-                        sendOtpButton.setText("Send OTP");
-                        handleVolleyError(error);
-                    }
+                            // ---------------------------------
+                            // SUCCESS
+                            // ---------------------------------
+
+                            response -> {
+
+                                Log.d(
+                                        TAG,
+                                        "OTP RESPONSE: " + response
+                                );
+
+                                sendOtpButton.setEnabled(true);
+                                sendOtpButton.setText("Send OTP");
+
+                                String message =
+                                        response.optString(
+                                                "message",
+                                                "OTP sent successfully"
+                                        );
+
+                                Toast.makeText(
+                                        User_forgotpassword.this,
+                                        message,
+                                        Toast.LENGTH_LONG
+                                ).show();
+
+                                // ---------------------------------
+                                // OPEN VERIFY OTP SCREEN
+                                // ---------------------------------
+
+                                Intent intent =
+                                        new Intent(
+                                                User_forgotpassword.this,
+                                                user_verify_otp.class
+                                        );
+
+                                intent.putExtra(
+                                        "email",
+                                        email
+                                );
+
+                                startActivity(intent);
+                            },
+
+                            // ---------------------------------
+                            // ERROR
+                            // ---------------------------------
+
+                            error -> {
+
+                                Log.e(
+                                        TAG,
+                                        "OTP REQUEST ERROR",
+                                        error
+                                );
+
+                                sendOtpButton.setEnabled(true);
+                                sendOtpButton.setText("Send OTP");
+
+                                handleVolleyError(error);
+                            }
+                    );
+
+            // -----------------------------------------
+            // IMPORTANT:
+            // INCREASE VOLLEY TIMEOUT
+            // -----------------------------------------
+
+            request.setRetryPolicy(
+                    new DefaultRetryPolicy(
+
+                            // 15 seconds timeout
+                            15000,
+
+                            // No automatic retry
+                            0,
+
+                            // Backoff multiplier
+                            1.0f
+                    )
             );
+
+            request.setShouldCache(false);
 
             requestQueue.add(request);
 
+            Log.d(TAG, "OTP request added to Volley queue");
+
         } catch (Exception e) {
+
+            Log.e(
+                    TAG,
+                    "Exception while sending OTP",
+                    e
+            );
+
             sendOtpButton.setEnabled(true);
             sendOtpButton.setText("Send OTP");
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+            Toast.makeText(
+                    this,
+                    "Error: " + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
         }
     }
 
+    // =====================================================
+    // VOLLEY ERROR HANDLER
+    // =====================================================
+
     private void handleVolleyError(VolleyError error) {
+
         String message = "Failed to send OTP";
 
-        try {
-            if (error.networkResponse != null && error.networkResponse.data != null) {
-                String responseData = new String(error.networkResponse.data);
-                Log.e(TAG, "Error Response: " + responseData);
+        Log.e(
+                TAG,
+                "Volley error: " + error
+        );
 
-                JSONObject errorObject = new JSONObject(responseData);
-                message = errorObject.optString("message", message);
-            } else {
-                message = "Network error: " + error.toString();
+        // -----------------------------------------
+        // SERVER RESPONSE ERROR
+        // -----------------------------------------
+
+        if (error.networkResponse != null) {
+
+            int statusCode =
+                    error.networkResponse.statusCode;
+
+            Log.e(
+                    TAG,
+                    "HTTP STATUS: " + statusCode
+            );
+
+            if (error.networkResponse.data != null) {
+
+                try {
+
+                    String responseData =
+                            new String(
+                                    error.networkResponse.data
+                            );
+
+                    Log.e(
+                            TAG,
+                            "SERVER ERROR RESPONSE: "
+                                    + responseData
+                    );
+
+                    JSONObject errorObject =
+                            new JSONObject(responseData);
+
+                    message =
+                            errorObject.optString(
+                                    "message",
+                                    message
+                            );
+
+                } catch (Exception e) {
+
+                    Log.e(
+                            TAG,
+                            "Could not parse server error",
+                            e
+                    );
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        Toast.makeText(User_forgotpassword.this, message, Toast.LENGTH_LONG).show();
+        // -----------------------------------------
+        // TIMEOUT
+        // -----------------------------------------
+
+        else if (error instanceof com.android.volley.TimeoutError) {
+
+            message =
+                    "Request timed out. Please try again.";
+        }
+
+        // -----------------------------------------
+        // NO CONNECTION
+        // -----------------------------------------
+
+        else if (error instanceof com.android.volley.NoConnectionError) {
+
+            message =
+                    "Unable to connect to server.";
+        }
+
+        // -----------------------------------------
+        // GENERAL NETWORK ERROR
+        // -----------------------------------------
+
+        else if (error instanceof com.android.volley.NetworkError) {
+
+            message =
+                    "Network error. Please check your connection.";
+        }
+
+        Toast.makeText(
+                User_forgotpassword.this,
+                message,
+                Toast.LENGTH_LONG
+        ).show();
     }
 }

@@ -1141,11 +1141,7 @@ public class User_Registration extends AppCompatActivity {
                                 "userType",
                                 userType
                         );
-
-                        // =====================================
                         // GPS COORDINATES
-                        // =====================================
-
                         params.put(
                                 "latitude",
                                 String.valueOf(

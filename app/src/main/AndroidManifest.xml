@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- ================= PERMISSIONS ================= -->
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <!-- ================= MAP APP VISIBILITY ================= -->
-
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -30,15 +26,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Feed_The_hunger"
         android:usesCleartextTraffic="true">
-
         <!-- ================= MAP PICKER ================= -->
-
         <activity
             android:name=".MapPickerActivity"
             android:exported="false" />
-
         <!-- ================= VOLUNTEER ================= -->
-
         <activity
             android:name=".Volenteer.volunteer_deliveries_main"
             android:exported="false" />
@@ -74,9 +66,7 @@
         <activity
             android:name=".Volenteer.activity_food"
             android:exported="true" />
-
         <!-- ================= USER ================= -->
-
         <activity
             android:name=".User.User_forgotpassword"
             android:exported="false" />
@@ -104,9 +94,7 @@
         <activity
             android:name=".User.User_Registration"
             android:exported="true" />
-
         <!-- ================= ADMIN ================= -->
-
         <activity
             android:name=".admin_forgetpassword"
             android:exported="false" />
@@ -154,9 +142,7 @@
         <activity
             android:name=".admin_food_row"
             android:exported="false" />
-
         <!-- ================= COMMON ================= -->
-
         <activity
             android:name=".vol_req"
             android:exported="false" />
@@ -176,9 +162,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
-        <!-- ================= SPLASH / LAUNCHER ================= -->
-
+        <!-- ================= LAUNCHER ================= -->
         <activity
             android:name=".activity_splash"
             android:exported="true">
@@ -190,9 +174,7 @@
             </intent-filter>
 
         </activity>
-
         <!-- ================= FIREBASE ================= -->
-
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
