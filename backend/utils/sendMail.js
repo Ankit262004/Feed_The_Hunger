@@ -7,7 +7,12 @@ console.log(
     "RESEND_API_KEY EXISTS:",
     !!process.env.RESEND_API_KEY
 );
+console.log(
+    "OTP_RECEIVER_EMAIL:",
+    process.env.OTP_RECEIVER_EMAIL || "NOT SET"
+);
 console.log("========================================");
+
 
 if (!process.env.RESEND_API_KEY) {
     console.error("❌ RESEND_API_KEY is missing");
@@ -26,28 +31,24 @@ const sendOtpEmail = async (toEmail, otp) => {
 
     try {
 
-        console.log(
-            "📧 Starting OTP email..."
-        );
+        console.log("========================================");
+        console.log("📧 STARTING OTP EMAIL");
+        console.log("========================================");
+
+
+        // =================================================
+        // REQUESTED ACCOUNT EMAIL
+        // =================================================
 
         console.log(
-            "📧 Requested email:",
+            "📧 Requested account email:",
             toEmail
         );
 
-        // =================================================
-        // IMPORTANT
-        // =================================================
-        // The email entered by the user does NOT need
-        // to exist in real life.
-        //
-        // OTP will ALWAYS be delivered to:
-        // anki20042602@gmail.com
-        // =================================================
 
-        const otpReceiver =
-            "anki20042602@gmail.com";
-
+        // =================================================
+        // CHECK RESEND API KEY
+        // =================================================
 
         if (!process.env.RESEND_API_KEY) {
 
@@ -58,11 +59,59 @@ const sendOtpEmail = async (toEmail, otp) => {
         }
 
 
+        // =================================================
+        // FIXED OTP RECEIVER
+        // =================================================
+        //
+        // The OTP is NOT sent to the account email.
+        //
+        // It is ALWAYS sent to the email configured in:
+        //
+        // OTP_RECEIVER_EMAIL
+        //
+        // Example:
+        //
+        // OTP_RECEIVER_EMAIL=ankitmandal2602@gmail.com
+        //
+        // =================================================
+
+        const otpReceiver =
+            process.env.OTP_RECEIVER_EMAIL
+                ?.trim()
+                .toLowerCase();
+
+
+        if (!otpReceiver) {
+
+            throw new Error(
+                "OTP_RECEIVER_EMAIL is missing in environment variables"
+            );
+
+        }
+
+
         console.log(
             "📧 OTP will be delivered to:",
             otpReceiver
         );
 
+
+        // =================================================
+        // VALIDATE OTP
+        // =================================================
+
+        if (!otp) {
+
+            throw new Error(
+                "OTP is missing"
+            );
+
+        }
+
+
+        // =================================================
+        // SEND EMAIL THROUGH RESEND
+        // =================================================
 
         const { data, error } =
             await resend.emails.send({
@@ -103,6 +152,17 @@ const sendOtpEmail = async (toEmail, otp) => {
                             <h3>
                                 Password Reset Request
                             </h3>
+
+                            <p>
+                                A password reset was requested
+                                for the account:
+                            </p>
+
+                            <p>
+                                <strong>
+                                    ${toEmail}
+                                </strong>
+                            </p>
 
                             <p>
                                 Your OTP for resetting
@@ -150,6 +210,10 @@ const sendOtpEmail = async (toEmail, otp) => {
             });
 
 
+        // =================================================
+        // RESEND ERROR
+        // =================================================
+
         if (error) {
 
             console.error(
@@ -165,6 +229,10 @@ const sendOtpEmail = async (toEmail, otp) => {
         }
 
 
+        // =================================================
+        // SUCCESS LOG
+        // =================================================
+
         console.log(
             "========================================"
         );
@@ -174,12 +242,12 @@ const sendOtpEmail = async (toEmail, otp) => {
         );
 
         console.log(
-            "📧 Requested email:",
+            "📧 Requested account:",
             toEmail
         );
 
         console.log(
-            "📧 Actual recipient:",
+            "📧 Actual OTP recipient:",
             otpReceiver
         );
 
@@ -198,21 +266,30 @@ const sendOtpEmail = async (toEmail, otp) => {
 
     } catch (error) {
 
+        // =================================================
+        // ERROR LOG
+        // =================================================
+
         console.error(
             "========================================"
         );
 
         console.error(
-            "❌ EMAIL SEND ERROR"
+            "❌ OTP EMAIL SEND ERROR"
         );
 
         console.error(
-            "Requested email:",
+            "📧 Requested account:",
             toEmail
         );
 
         console.error(
-            "Error:",
+            "📧 OTP receiver:",
+            process.env.OTP_RECEIVER_EMAIL
+        );
+
+        console.error(
+            "❌ Error:",
             error
         );
 
@@ -220,11 +297,16 @@ const sendOtpEmail = async (toEmail, otp) => {
             "========================================"
         );
 
+
         throw error;
 
     }
 
 };
 
+
+// =====================================================
+// EXPORT
+// =====================================================
 
 module.exports = sendOtpEmail;
