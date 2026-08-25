@@ -21,8 +21,11 @@ const createOtpKey = (email, userType) => {
 };
 
 const findOtpByEmail = (email) => {
-    for (let [key, value] of otpStore.entries()) {
+
+    for (const [key, value] of otpStore.entries()) {
+
         if (key.startsWith(`${email}_`)) {
+
             return {
                 otpKey: key,
                 otpData: value
@@ -38,11 +41,45 @@ const findOtpByEmail = (email) => {
 
 
 // =====================================================
+// OTP EMAIL RECEIVER
+// =====================================================
+// For testing:
+// Every OTP is sent to this email.
+//
+// The ORIGINAL user's email is still stored in otpStore,
+// so verification and password reset work for the
+// original account.
+// =====================================================
+
+const getOtpReceiverEmail = () => {
+
+    const receiver =
+        process.env.OTP_RECEIVER_EMAIL
+            ?.trim()
+            .toLowerCase();
+
+    if (!receiver) {
+
+        throw new Error(
+            "OTP_RECEIVER_EMAIL is missing in .env"
+        );
+
+    }
+
+    return receiver;
+};
+
+
+// =====================================================
 // HOME
 // =====================================================
 
 router.get('/', (req, res) => {
-    return res.send("🚀 User Service Running Successfully");
+
+    return res.send(
+        "🚀 User Service Running Successfully"
+    );
+
 });
 
 
@@ -55,7 +92,10 @@ router.post('/registeruser', async (req, res) => {
 
     try {
 
-        console.log("📩 REGISTER REQUEST BODY:", req.body);
+        console.log(
+            "📩 REGISTER REQUEST BODY:",
+            req.body
+        );
 
         let {
             email,
@@ -69,10 +109,6 @@ router.post('/registeruser', async (req, res) => {
         } = req.body;
 
 
-        // -----------------------------
-        // CLEAN DATA
-        // -----------------------------
-
         email = email?.trim().toLowerCase();
         fullName = fullName?.trim();
         password = password?.trim();
@@ -81,9 +117,9 @@ router.post('/registeruser', async (req, res) => {
         fcmToken = fcmToken?.trim();
 
 
-        // -----------------------------
-        // PARSE COORDINATES
-        // -----------------------------
+        // =================================================
+        // COORDINATES
+        // =================================================
 
         let parsedLatitude = null;
         let parsedLongitude = null;
@@ -93,7 +129,9 @@ router.post('/registeruser', async (req, res) => {
             latitude !== null &&
             latitude !== ""
         ) {
+
             parsedLatitude = Number(latitude);
+
         }
 
         if (
@@ -101,13 +139,15 @@ router.post('/registeruser', async (req, res) => {
             longitude !== null &&
             longitude !== ""
         ) {
+
             parsedLongitude = Number(longitude);
+
         }
 
 
-        // -----------------------------
+        // =================================================
         // REQUIRED FIELDS
-        // -----------------------------
+        // =================================================
 
         if (
             !email ||
@@ -118,16 +158,20 @@ router.post('/registeruser', async (req, res) => {
         ) {
 
             return res.status(400).json({
+
                 success: false,
-                message: "All fields are required"
+
+                message:
+                    "All fields are required"
+
             });
 
         }
 
 
-        // -----------------------------
+        // =================================================
         // VALID USER TYPE
-        // -----------------------------
+        // =================================================
 
         const allowedTypes = [
             'donor',
@@ -137,16 +181,20 @@ router.post('/registeruser', async (req, res) => {
         if (!allowedTypes.includes(userType)) {
 
             return res.status(400).json({
+
                 success: false,
-                message: "Invalid userType. Only donor or receiver allowed."
+
+                message:
+                    "Invalid userType. Only donor or receiver allowed."
+
             });
 
         }
 
 
-        // -----------------------------
-        // VALID COORDINATES
-        // -----------------------------
+        // =================================================
+        // VALID LATITUDE
+        // =================================================
 
         if (
             parsedLatitude !== null &&
@@ -158,12 +206,20 @@ router.post('/registeruser', async (req, res) => {
         ) {
 
             return res.status(400).json({
+
                 success: false,
-                message: "Invalid latitude"
+
+                message:
+                    "Invalid latitude"
+
             });
 
         }
 
+
+        // =================================================
+        // VALID LONGITUDE
+        // =================================================
 
         if (
             parsedLongitude !== null &&
@@ -175,65 +231,83 @@ router.post('/registeruser', async (req, res) => {
         ) {
 
             return res.status(400).json({
+
                 success: false,
-                message: "Invalid longitude"
+
+                message:
+                    "Invalid longitude"
+
             });
 
         }
 
 
-        // -----------------------------
+        // =================================================
         // CHECK EXISTING USER
-        // -----------------------------
+        // =================================================
 
-        const existingUser = await User.findOne({
-            email,
-            userType
-        });
+        const existingUser =
+            await User.findOne({
+
+                email,
+                userType
+
+            });
 
         if (existingUser) {
 
             return res.status(400).json({
+
                 success: false,
-                message: `${userType} already registered with this email`
+
+                message:
+                    `${userType} already registered with this email`
+
             });
 
         }
 
 
-        // -----------------------------
+        // =================================================
         // HASH PASSWORD
-        // -----------------------------
+        // =================================================
 
-        const hashedPassword = await bcrypt.hash(
-            password,
-            10
-        );
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
 
 
-        // -----------------------------
+        // =================================================
         // CREATE USER
-        // -----------------------------
+        // =================================================
 
-        const newUser = new User({
+        const newUser =
+            new User({
 
-            email,
-            fullName,
-            password: hashedPassword,
+                email,
 
-            location,
+                fullName,
 
-            latitude: parsedLatitude,
-            longitude: parsedLongitude,
+                password:
+                    hashedPassword,
 
-            userType,
+                location,
 
-            fcmToken: fcmToken || null
+                latitude:
+                    parsedLatitude,
 
-        });
+                longitude:
+                    parsedLongitude,
+
+                userType,
+
+                fcmToken:
+                    fcmToken || null
+
+            });
 
 
-        const savedUser = await newUser.save();
+        const savedUser =
+            await newUser.save();
 
 
         console.log(
@@ -242,33 +316,38 @@ router.post('/registeruser', async (req, res) => {
         );
 
 
-        // -----------------------------
-        // RESPONSE
-        // -----------------------------
-
         return res.status(201).json({
 
             success: true,
 
-            message: `${userType} registered successfully`,
+            message:
+                `${userType} registered successfully`,
 
             user: {
 
-                _id: savedUser._id,
+                _id:
+                    savedUser._id,
 
-                email: savedUser.email,
+                email:
+                    savedUser.email,
 
-                fullName: savedUser.fullName,
+                fullName:
+                    savedUser.fullName,
 
-                location: savedUser.location,
+                location:
+                    savedUser.location,
 
-                latitude: savedUser.latitude,
+                latitude:
+                    savedUser.latitude,
 
-                longitude: savedUser.longitude,
+                longitude:
+                    savedUser.longitude,
 
-                userType: savedUser.userType,
+                userType:
+                    savedUser.userType,
 
-                fcmToken: savedUser.fcmToken
+                fcmToken:
+                    savedUser.fcmToken
 
             }
 
@@ -289,7 +368,8 @@ router.post('/registeruser', async (req, res) => {
 
                 success: false,
 
-                message: "Email already registered for this role"
+                message:
+                    "Email already registered for this role"
 
             });
 
@@ -300,9 +380,11 @@ router.post('/registeruser', async (req, res) => {
 
             success: false,
 
-            message: "Internal server error",
+            message:
+                "Internal server error",
 
-            error: error.message
+            error:
+                error.message
 
         });
 
@@ -337,10 +419,6 @@ router.post('/volunteer/register', async (req, res) => {
         fcmToken = fcmToken?.trim();
 
 
-        // -----------------------------
-        // COORDINATES
-        // -----------------------------
-
         let parsedLatitude = null;
         let parsedLongitude = null;
 
@@ -350,7 +428,10 @@ router.post('/volunteer/register', async (req, res) => {
             latitude !== null &&
             latitude !== ""
         ) {
-            parsedLatitude = Number(latitude);
+
+            parsedLatitude =
+                Number(latitude);
+
         }
 
 
@@ -359,13 +440,12 @@ router.post('/volunteer/register', async (req, res) => {
             longitude !== null &&
             longitude !== ""
         ) {
-            parsedLongitude = Number(longitude);
+
+            parsedLongitude =
+                Number(longitude);
+
         }
 
-
-        // -----------------------------
-        // REQUIRED FIELDS
-        // -----------------------------
 
         if (
             !email ||
@@ -378,16 +458,13 @@ router.post('/volunteer/register', async (req, res) => {
 
                 success: false,
 
-                message: "All fields are required"
+                message:
+                    "All fields are required"
 
             });
 
         }
 
-
-        // -----------------------------
-        // VALID COORDINATES
-        // -----------------------------
 
         if (
             parsedLatitude !== null &&
@@ -402,7 +479,8 @@ router.post('/volunteer/register', async (req, res) => {
 
                 success: false,
 
-                message: "Invalid latitude"
+                message:
+                    "Invalid latitude"
 
             });
 
@@ -422,24 +500,23 @@ router.post('/volunteer/register', async (req, res) => {
 
                 success: false,
 
-                message: "Invalid longitude"
+                message:
+                    "Invalid longitude"
 
             });
 
         }
 
 
-        // -----------------------------
-        // CHECK VOLUNTEER
-        // -----------------------------
+        const existingVolunteer =
+            await User.findOne({
 
-        const existingVolunteer = await User.findOne({
+                email,
 
-            email,
+                userType:
+                    'volunteer'
 
-            userType: 'volunteer'
-
-        });
+            });
 
 
         if (existingVolunteer) {
@@ -448,46 +525,43 @@ router.post('/volunteer/register', async (req, res) => {
 
                 success: false,
 
-                message: "Volunteer already registered with this email"
+                message:
+                    "Volunteer already registered with this email"
 
             });
 
         }
 
 
-        // -----------------------------
-        // HASH PASSWORD
-        // -----------------------------
-
-        const hashedPassword = await bcrypt.hash(
-            password,
-            10
-        );
+        const hashedPassword =
+            await bcrypt.hash(password, 10);
 
 
-        // -----------------------------
-        // CREATE VOLUNTEER
-        // -----------------------------
+        const newVolunteer =
+            new User({
 
-        const newVolunteer = new User({
+                email,
 
-            email,
+                fullName,
 
-            fullName,
+                password:
+                    hashedPassword,
 
-            password: hashedPassword,
+                location,
 
-            location,
+                latitude:
+                    parsedLatitude,
 
-            latitude: parsedLatitude,
+                longitude:
+                    parsedLongitude,
 
-            longitude: parsedLongitude,
+                userType:
+                    'volunteer',
 
-            userType: 'volunteer',
+                fcmToken:
+                    fcmToken || null
 
-            fcmToken: fcmToken || null
-
-        });
+            });
 
 
         const savedVolunteer =
@@ -504,25 +578,34 @@ router.post('/volunteer/register', async (req, res) => {
 
             success: true,
 
-            message: "Volunteer registered successfully",
+            message:
+                "Volunteer registered successfully",
 
             user: {
 
-                _id: savedVolunteer._id,
+                _id:
+                    savedVolunteer._id,
 
-                email: savedVolunteer.email,
+                email:
+                    savedVolunteer.email,
 
-                fullName: savedVolunteer.fullName,
+                fullName:
+                    savedVolunteer.fullName,
 
-                location: savedVolunteer.location,
+                location:
+                    savedVolunteer.location,
 
-                latitude: savedVolunteer.latitude,
+                latitude:
+                    savedVolunteer.latitude,
 
-                longitude: savedVolunteer.longitude,
+                longitude:
+                    savedVolunteer.longitude,
 
-                userType: savedVolunteer.userType,
+                userType:
+                    savedVolunteer.userType,
 
-                fcmToken: savedVolunteer.fcmToken
+                fcmToken:
+                    savedVolunteer.fcmToken
 
             }
 
@@ -555,9 +638,11 @@ router.post('/volunteer/register', async (req, res) => {
 
             success: false,
 
-            message: "Internal server error",
+            message:
+                "Internal server error",
 
-            error: error.message
+            error:
+                error.message
 
         });
 
@@ -592,26 +677,30 @@ router.post('/login', async (req, res) => {
 
                 success: false,
 
-                message: "Email and password required"
+                message:
+                    "Email and password required"
 
             });
 
         }
 
 
-        const user = await User.findOne({
+        const user =
+            await User.findOne({
 
-            email,
+                email,
 
-            userType: {
-                $in: [
-                    'donor',
-                    'receiver',
-                    'volunteer'
-                ]
-            }
+                userType: {
 
-        });
+                    $in: [
+                        'donor',
+                        'receiver',
+                        'volunteer'
+                    ]
+
+                }
+
+            });
 
 
         if (!user) {
@@ -620,7 +709,8 @@ router.post('/login', async (req, res) => {
 
                 success: false,
 
-                message: "User not found"
+                message:
+                    "User not found"
 
             });
 
@@ -640,76 +730,95 @@ router.post('/login', async (req, res) => {
 
                 success: false,
 
-                message: "Invalid password"
+                message:
+                    "Invalid password"
 
             });
 
         }
 
 
-        // -----------------------------
+        // =================================================
         // UPDATE FCM TOKEN
-        // -----------------------------
+        // =================================================
 
         if (fcmToken) {
 
-            user.fcmToken = fcmToken;
+            user.fcmToken =
+                fcmToken;
 
             await user.save();
 
             console.log(
-                "✅ FCM Token updated on login:",
-                fcmToken
+                "✅ FCM Token updated on login"
             );
 
         }
 
 
-        // -----------------------------
+        // =================================================
         // JWT
-        // -----------------------------
+        // =================================================
 
-        const token = jwt.sign(
+        const token =
+            jwt.sign(
 
-            {
-                userId: user._id,
-                userType: user.userType
-            },
+                {
 
-            process.env.SECRET_KEY,
+                    userId:
+                        user._id,
 
-            {
-                expiresIn: "1d"
-            }
+                    userType:
+                        user.userType
 
-        );
+                },
+
+                process.env.SECRET_KEY,
+
+                {
+
+                    expiresIn:
+                        "1d"
+
+                }
+
+            );
 
 
         return res.status(200).json({
 
             success: true,
 
-            message: "Login successful",
+            message:
+                "Login successful",
 
             token,
 
             user: {
 
-                _id: user._id,
+                _id:
+                    user._id,
 
-                email: user.email,
+                email:
+                    user.email,
 
-                fullName: user.fullName,
+                fullName:
+                    user.fullName,
 
-                location: user.location,
+                location:
+                    user.location,
 
-                latitude: user.latitude,
+                latitude:
+                    user.latitude,
 
-                longitude: user.longitude,
+                longitude:
+                    user.longitude,
 
-                userType: user.userType,
+                userType:
+                    user.userType,
 
-                fcmToken: user.fcmToken
+                fcmToken:
+                    user.fcmToken
 
             }
 
@@ -728,9 +837,11 @@ router.post('/login', async (req, res) => {
 
             success: false,
 
-            message: "Server error",
+            message:
+                "Server error",
 
-            error: error.message
+            error:
+                error.message
 
         });
 
@@ -740,7 +851,8 @@ router.post('/login', async (req, res) => {
 
 
 // =====================================================
-// COMMON FORGOT PASSWORD - SEND OTP
+// USER / VOLUNTEER FORGOT PASSWORD
+// SEND OTP
 // =====================================================
 
 router.post(
@@ -749,9 +861,17 @@ router.post(
 
         try {
 
-            let { email } = req.body;
+            let { email } =
+                req.body;
 
-            email = email?.trim().toLowerCase();
+            email =
+                email?.trim().toLowerCase();
+
+
+            console.log(
+                "📩 FORGOT PASSWORD REQUEST:",
+                email
+            );
 
 
             if (!email) {
@@ -760,35 +880,50 @@ router.post(
 
                     success: false,
 
-                    message: "Email is required"
+                    message:
+                        "Email is required"
 
                 });
 
             }
 
 
-            const user = await User.findOne({
+            // =================================================
+            // FIND REGISTERED USER
+            // DONOR / RECEIVER / VOLUNTEER
+            // =================================================
 
-                email,
+            const user =
+                await User.findOne({
 
-                userType: {
-                    $in: [
-                        'donor',
-                        'receiver',
-                        'volunteer'
-                    ]
-                }
+                    email,
 
-            });
+                    userType: {
+
+                        $in: [
+                            'donor',
+                            'receiver',
+                            'volunteer'
+                        ]
+
+                    }
+
+                });
 
 
             if (!user) {
+
+                console.log(
+                    "❌ EMAIL NOT REGISTERED:",
+                    email
+                );
 
                 return res.status(404).json({
 
                     success: false,
 
-                    message: "Email not registered"
+                    message:
+                        "Email not registered"
 
                 });
 
@@ -799,12 +934,20 @@ router.post(
                 user.userType;
 
 
+            // =================================================
+            // CREATE OTP KEY USING ORIGINAL EMAIL
+            // =================================================
+
             const otpKey =
                 createOtpKey(
                     email,
                     userType
                 );
 
+
+            // =================================================
+            // GENERATE OTP
+            // =================================================
 
             const otp =
                 Math.floor(
@@ -818,8 +961,14 @@ router.post(
                 5 * 60 * 1000;
 
 
+            // =================================================
+            // STORE OTP AGAINST ORIGINAL EMAIL
+            // =================================================
+
             otpStore.set(
+
                 otpKey,
+
                 {
 
                     otp,
@@ -831,37 +980,89 @@ router.post(
                     userType
 
                 }
+
             );
 
 
             console.log(
-                "✅ USER OTP:",
+                "✅ USER/VOLUNTEER OTP:",
                 otp,
-                "FOR:",
+                "FOR ACCOUNT:",
                 email
             );
 
 
-            /*
-             * IMPORTANT:
-             * Send OTP to the registered email,
-             * not MAIL_USER.
-             */
+            // =================================================
+            // SEND OTP
+            // IMPORTANT:
+            // OTP IS ALWAYS SENT TO OTP_RECEIVER_EMAIL
+            // =================================================
 
-            await sendOtpEmail(
-                email,
-                otp
-            );
+            try {
+
+                const otpReceiver =
+                    getOtpReceiverEmail();
 
 
-            return res.status(200).json({
+                console.log(
+                    "📧 OTP FOR ACCOUNT:",
+                    email
+                );
 
-                success: true,
+                console.log(
+                    "📧 OTP SENT TO:",
+                    otpReceiver
+                );
 
-                message:
-                    "OTP sent successfully"
 
-            });
+                await sendOtpEmail(
+                    otpReceiver,
+                    otp
+                );
+
+
+                console.log(
+                    "✅ OTP EMAIL SENT SUCCESSFULLY"
+                );
+
+
+                return res.status(200).json({
+
+                    success: true,
+
+                    message:
+                        "OTP sent successfully"
+
+                });
+
+
+            } catch (emailError) {
+
+                console.error(
+                    "❌ OTP EMAIL FAILED:",
+                    emailError
+                );
+
+
+                // Delete OTP if email was not sent
+                otpStore.delete(
+                    otpKey
+                );
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        "Unable to send OTP email. Please try again.",
+
+                    error:
+                        emailError.message
+
+                });
+
+            }
 
 
         } catch (error) {
@@ -879,7 +1080,8 @@ router.post(
                 message:
                     "Server error while sending OTP",
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -890,7 +1092,8 @@ router.post(
 
 
 // =====================================================
-// COMMON FORGOT PASSWORD - VERIFY OTP
+// USER / VOLUNTEER FORGOT PASSWORD
+// VERIFY OTP
 // =====================================================
 
 router.post(
@@ -910,6 +1113,13 @@ router.post(
 
             otp =
                 otp?.trim();
+
+
+            console.log(
+                "🔐 VERIFY OTP REQUEST:",
+                email,
+                otp
+            );
 
 
             if (!email || !otp) {
@@ -946,12 +1156,19 @@ router.post(
             }
 
 
+            // =================================================
+            // CHECK EXPIRY
+            // =================================================
+
             if (
                 Date.now() >
                 otpData.expiryTime
             ) {
 
-                otpStore.delete(otpKey);
+                otpStore.delete(
+                    otpKey
+                );
+
 
                 return res.status(400).json({
 
@@ -964,6 +1181,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // CHECK OTP
+            // =================================================
 
             if (
                 otpData.otp !== otp
@@ -981,11 +1202,23 @@ router.post(
             }
 
 
-            otpData.verified = true;
+            // =================================================
+            // MARK VERIFIED
+            // =================================================
+
+            otpData.verified =
+                true;
+
 
             otpStore.set(
                 otpKey,
                 otpData
+            );
+
+
+            console.log(
+                "✅ OTP VERIFIED:",
+                email
             );
 
 
@@ -1014,7 +1247,8 @@ router.post(
                 message:
                     "Server error while verifying OTP",
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -1025,7 +1259,8 @@ router.post(
 
 
 // =====================================================
-// COMMON FORGOT PASSWORD - RESET PASSWORD
+// USER / VOLUNTEER FORGOT PASSWORD
+// RESET PASSWORD
 // =====================================================
 
 router.post(
@@ -1049,6 +1284,12 @@ router.post(
 
             confirmPassword =
                 confirmPassword?.trim();
+
+
+            console.log(
+                "🔄 RESET PASSWORD REQUEST:",
+                email
+            );
 
 
             if (
@@ -1086,7 +1327,9 @@ router.post(
             }
 
 
-            if (newPassword.length < 6) {
+            if (
+                newPassword.length < 6
+            ) {
 
                 return res.status(400).json({
 
@@ -1099,6 +1342,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // FIND OTP SESSION USING ORIGINAL EMAIL
+            // =================================================
 
             const {
                 otpKey,
@@ -1120,12 +1367,19 @@ router.post(
             }
 
 
+            // =================================================
+            // CHECK EXPIRY
+            // =================================================
+
             if (
                 Date.now() >
                 otpData.expiryTime
             ) {
 
-                otpStore.delete(otpKey);
+                otpStore.delete(
+                    otpKey
+                );
+
 
                 return res.status(400).json({
 
@@ -1138,6 +1392,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // CHECK VERIFIED
+            // =================================================
 
             if (!otpData.verified) {
 
@@ -1152,6 +1410,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // FIND ORIGINAL USER
+            // =================================================
 
             const user =
                 await User.findOne({
@@ -1178,6 +1440,10 @@ router.post(
             }
 
 
+            // =================================================
+            // HASH NEW PASSWORD
+            // =================================================
+
             const hashedPassword =
                 await bcrypt.hash(
                     newPassword,
@@ -1192,8 +1458,18 @@ router.post(
             await user.save();
 
 
+            // =================================================
+            // DELETE USED OTP
+            // =================================================
+
             otpStore.delete(
                 otpKey
+            );
+
+
+            console.log(
+                "✅ PASSWORD RESET SUCCESS:",
+                email
             );
 
 
@@ -1222,7 +1498,8 @@ router.post(
                 message:
                     "Server error while resetting password",
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -1278,8 +1555,10 @@ router.post(
                 latitude !== null &&
                 latitude !== ""
             ) {
+
                 parsedLatitude =
                     Number(latitude);
+
             }
 
 
@@ -1288,8 +1567,10 @@ router.post(
                 longitude !== null &&
                 longitude !== ""
             ) {
+
                 parsedLongitude =
                     Number(longitude);
+
             }
 
 
@@ -1317,7 +1598,8 @@ router.post(
 
                     email,
 
-                    userType: 'admin'
+                    userType:
+                        'admin'
 
                 });
 
@@ -1500,7 +1782,8 @@ router.post(
 
                     email,
 
-                    userType: 'admin'
+                    userType:
+                        'admin'
 
                 });
 
@@ -1554,18 +1837,22 @@ router.post(
                 jwt.sign(
 
                     {
+
                         userId:
                             admin._id,
 
                         userType:
                             admin.userType
+
                     },
 
                     process.env.SECRET_KEY,
 
                     {
+
                         expiresIn:
                             "1d"
+
                     }
 
                 );
@@ -1644,10 +1931,18 @@ router.post(
 
         try {
 
-            let { email } = req.body;
+            let { email } =
+                req.body;
+
 
             email =
                 email?.trim().toLowerCase();
+
+
+            console.log(
+                "📩 ADMIN FORGOT PASSWORD REQUEST:",
+                email
+            );
 
 
             if (!email) {
@@ -1664,17 +1959,28 @@ router.post(
             }
 
 
+            // =================================================
+            // FIND ADMIN
+            // =================================================
+
             const admin =
                 await User.findOne({
 
                     email,
 
-                    userType: 'admin'
+                    userType:
+                        'admin'
 
                 });
 
 
             if (!admin) {
+
+                console.log(
+                    "❌ ADMIN EMAIL NOT REGISTERED:",
+                    email
+                );
+
 
                 return res.status(404).json({
 
@@ -1688,12 +1994,20 @@ router.post(
             }
 
 
+            // =================================================
+            // CREATE ADMIN OTP KEY USING ORIGINAL EMAIL
+            // =================================================
+
             const otpKey =
                 createOtpKey(
                     email,
                     'admin'
                 );
 
+
+            // =================================================
+            // GENERATE OTP
+            // =================================================
 
             const otp =
                 Math.floor(
@@ -1706,6 +2020,10 @@ router.post(
                 Date.now() +
                 5 * 60 * 1000;
 
+
+            // =================================================
+            // STORE OTP
+            // =================================================
 
             otpStore.set(
 
@@ -1730,26 +2048,80 @@ router.post(
             console.log(
                 "✅ ADMIN OTP:",
                 otp,
-                "FOR:",
+                "FOR ACCOUNT:",
                 email
             );
 
 
-            // Send to registered admin email
-            await sendOtpEmail(
-                email,
-                otp
-            );
+            // =================================================
+            // SEND ADMIN OTP
+            // ALWAYS TO OTP_RECEIVER_EMAIL
+            // =================================================
+
+            try {
+
+                const otpReceiver =
+                    getOtpReceiverEmail();
 
 
-            return res.status(200).json({
+                console.log(
+                    "📧 ADMIN OTP FOR ACCOUNT:",
+                    email
+                );
 
-                success: true,
+                console.log(
+                    "📧 ADMIN OTP SENT TO:",
+                    otpReceiver
+                );
 
-                message:
-                    "OTP sent successfully to email"
 
-            });
+                await sendOtpEmail(
+                    otpReceiver,
+                    otp
+                );
+
+
+                console.log(
+                    "✅ ADMIN OTP EMAIL SENT SUCCESSFULLY"
+                );
+
+
+                return res.status(200).json({
+
+                    success: true,
+
+                    message:
+                        "OTP sent successfully to email"
+
+                });
+
+
+            } catch (emailError) {
+
+                console.error(
+                    "❌ ADMIN OTP EMAIL FAILED:",
+                    emailError
+                );
+
+
+                otpStore.delete(
+                    otpKey
+                );
+
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message:
+                        "Unable to send OTP email",
+
+                    error:
+                        emailError.message
+
+                });
+
+            }
 
 
         } catch (error) {
@@ -1801,6 +2173,13 @@ router.post(
                 otp?.trim();
 
 
+            console.log(
+                "🔐 ADMIN VERIFY OTP REQUEST:",
+                email,
+                otp
+            );
+
+
             if (!email || !otp) {
 
                 return res.status(400).json({
@@ -1842,6 +2221,10 @@ router.post(
             }
 
 
+            // =================================================
+            // CHECK EXPIRY
+            // =================================================
+
             if (
                 Date.now() >
                 otpData.expiryTime
@@ -1850,6 +2233,7 @@ router.post(
                 otpStore.delete(
                     otpKey
                 );
+
 
                 return res.status(400).json({
 
@@ -1862,6 +2246,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // CHECK OTP
+            // =================================================
 
             if (
                 otpData.otp !== otp
@@ -1879,6 +2267,10 @@ router.post(
             }
 
 
+            // =================================================
+            // MARK VERIFIED
+            // =================================================
+
             otpData.verified =
                 true;
 
@@ -1886,6 +2278,12 @@ router.post(
             otpStore.set(
                 otpKey,
                 otpData
+            );
+
+
+            console.log(
+                "✅ ADMIN OTP VERIFIED:",
+                email
             );
 
 
@@ -1952,6 +2350,12 @@ router.post(
                 confirmPassword?.trim();
 
 
+            console.log(
+                "🔄 ADMIN RESET PASSWORD REQUEST:",
+                email
+            );
+
+
             if (
                 !email ||
                 !newPassword ||
@@ -1987,7 +2391,9 @@ router.post(
             }
 
 
-            if (newPassword.length < 6) {
+            if (
+                newPassword.length < 6
+            ) {
 
                 return res.status(400).json({
 
@@ -2000,6 +2406,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // FIND ADMIN OTP SESSION
+            // =================================================
 
             const otpKey =
                 createOtpKey(
@@ -2028,6 +2438,10 @@ router.post(
             }
 
 
+            // =================================================
+            // CHECK EXPIRY
+            // =================================================
+
             if (
                 Date.now() >
                 otpData.expiryTime
@@ -2036,6 +2450,7 @@ router.post(
                 otpStore.delete(
                     otpKey
                 );
+
 
                 return res.status(400).json({
 
@@ -2048,6 +2463,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // CHECK VERIFIED
+            // =================================================
 
             if (!otpData.verified) {
 
@@ -2062,6 +2481,10 @@ router.post(
 
             }
 
+
+            // =================================================
+            // FIND ORIGINAL ADMIN
+            // =================================================
 
             const admin =
                 await User.findOne({
@@ -2088,6 +2511,10 @@ router.post(
             }
 
 
+            // =================================================
+            // HASH NEW PASSWORD
+            // =================================================
+
             const hashedPassword =
                 await bcrypt.hash(
                     newPassword,
@@ -2102,8 +2529,18 @@ router.post(
             await admin.save();
 
 
+            // =================================================
+            // DELETE USED OTP
+            // =================================================
+
             otpStore.delete(
                 otpKey
+            );
+
+
+            console.log(
+                "✅ ADMIN PASSWORD RESET SUCCESS:",
+                email
             );
 
 
@@ -2177,10 +2614,6 @@ router.get(
             }
 
 
-            // -----------------------------
-            // VOLUNTEER PROFILE
-            // -----------------------------
-
             if (
                 user.userType ===
                 'volunteer'
@@ -2189,7 +2622,8 @@ router.get(
                 const totalAccepted =
                     await Food.countDocuments({
 
-                        handledBy: userId,
+                        handledBy:
+                            userId,
 
                         status:
                             'accepted'
@@ -2200,7 +2634,8 @@ router.get(
                 const totalRejected =
                     await Food.countDocuments({
 
-                        handledBy: userId,
+                        handledBy:
+                            userId,
 
                         status:
                             'rejected'
@@ -2230,14 +2665,11 @@ router.get(
             }
 
 
-            // -----------------------------
-            // DONOR / RECEIVER / ADMIN
-            // -----------------------------
-
             const totalUploaded =
                 await Food.countDocuments({
 
-                    donorId: userId
+                    donorId:
+                        userId
 
                 });
 
@@ -2290,10 +2722,12 @@ router.get(
                 await User.find({
 
                     userType: {
+
                         $in: [
                             'donor',
                             'receiver'
                         ]
+
                     }
 
                 }).select("-password");
@@ -2397,10 +2831,6 @@ router.patch(
             };
 
 
-            // -----------------------------
-            // CLEAN LOCATION
-            // -----------------------------
-
             if (
                 data.location !== undefined
             ) {
@@ -2412,10 +2842,6 @@ router.patch(
 
             }
 
-
-            // -----------------------------
-            // COORDINATES
-            // -----------------------------
 
             if (
                 data.latitude !== undefined &&
@@ -2445,10 +2871,6 @@ router.patch(
             }
 
 
-            // -----------------------------
-            // PASSWORD
-            // -----------------------------
-
             if (data.password) {
 
                 data.password =
@@ -2468,8 +2890,11 @@ router.patch(
                     data,
 
                     {
+
                         new: true,
+
                         runValidators: true
+
                     }
 
                 ).select("-password");
@@ -2527,7 +2952,6 @@ router.patch(
 
 // =====================================================
 // DELETE USER
-// DONOR / RECEIVER ONLY
 // =====================================================
 
 router.delete(
@@ -2543,10 +2967,12 @@ router.delete(
                         req.params.id,
 
                     userType: {
+
                         $in: [
                             'donor',
                             'receiver'
                         ]
+
                     }
 
                 });
@@ -2705,12 +3131,16 @@ router.post(
                     userId,
 
                     {
+
                         fcmToken:
                             fcmToken
+
                     },
 
                     {
+
                         new: true
+
                     }
 
                 ).select("-password");
